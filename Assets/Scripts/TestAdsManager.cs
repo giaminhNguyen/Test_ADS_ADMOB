@@ -18,12 +18,16 @@ namespace DefaultNamespace
         
         [SerializeField]
         private Text _nativeSatus;
+        
+        [SerializeField]
+        private Text _openAdSatus;
 
         private void Update()
         {
             _rewardStatus.text = AdsManager_ADMOB.Instance.HasRewardedVideo ? "Ready" : "Not Ready";
-            _interStatus.text = AdsManager_ADMOB.Instance.HasInterstitial ? "Ready" : "Not Ready";
+            _interStatus.text  = AdsManager_ADMOB.Instance.HasInterstitial ? "Ready" : "Not Ready";
             _bannerStatus.text = AdsManager_ADMOB.Instance.HasBanner ? "Ready" : "Not Ready";
+            _openAdSatus.text  = AdsManager_ADMOB.Instance.HasOpenAds ? "Ready" : "Not Ready";
         }
 
         public void ShowInterstitial()
@@ -41,6 +45,16 @@ namespace DefaultNamespace
             AdsManager_ADMOB.Instance.LoadBannerAd();
         }
 
+        public void ShowBanner()
+        {
+            AdsManager_ADMOB.Instance.ShowBannerAd();
+        }
+
+        public void HideBanner()
+        {
+            AdsManager_ADMOB.Instance.HideBannerAd();
+        }
+
         public void DestroyBanner()
         {
             AdsManager_ADMOB.Instance.DestroyBannerView();
@@ -51,9 +65,31 @@ namespace DefaultNamespace
             
         }
         
+        public void ShowNative()
+        {
+            
+        }
+        
+        public void HideNative(){}
+        
         public void DestroyNative()
         {
             
+        }
+        
+        public void LoadOpenAd()
+        {
+            AdsManager_ADMOB.Instance.LoadOpenAd();
+        }
+        
+        public void ShowOpenAd()
+        {
+            AdsManager_ADMOB.Instance.ShowOpenAd();
+        }
+
+        public void DestroyOpenAd()
+        {
+            AdsManager_ADMOB.Instance.DestroyOpenAd();
         }
         
     }

@@ -11,7 +11,7 @@ using UnityEngine.Rendering;
 using UnityEngine.SceneManagement;
 using Scene = UnityEngine.SceneManagement.Scene;
 
-namespace RendererTool
+namespace UnityHelper
 {
     public class RendererEditorWindow : EditorWindow
     {

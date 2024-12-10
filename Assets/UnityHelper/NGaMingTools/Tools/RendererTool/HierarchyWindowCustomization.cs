@@ -2,7 +2,7 @@
 using UnityEditor;
 using UnityEngine;
 
-namespace RendererTool
+namespace UnityHelper
 {
     [InitializeOnLoad]
     public static class HierarchyWindowCustomization

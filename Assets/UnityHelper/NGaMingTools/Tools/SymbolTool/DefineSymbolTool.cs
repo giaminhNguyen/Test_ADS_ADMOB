@@ -1,7 +1,7 @@
+#if UNITY_EDITOR
 using UnityEditor;
 using UnityEngine;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace UnityHelper
 {
@@ -106,7 +106,7 @@ namespace UnityHelper
                 pix[i] = col;
             }
 
-            Texture2D result = new Texture2D(width, height);
+            var result = new Texture2D(width, height);
             result.SetPixels(pix);
             result.Apply();
 
@@ -114,3 +114,4 @@ namespace UnityHelper
         }
     }
 }
+#endif

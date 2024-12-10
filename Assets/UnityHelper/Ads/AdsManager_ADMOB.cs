@@ -1,5 +1,7 @@
 using UnityEngine;
 using System;
+using UnityEngine.Serialization;
+using VInspector;
 #if USE_ADS_ADMOB
 using System.Threading.Tasks;
 using GoogleMobileAds.Api;
@@ -10,7 +12,6 @@ namespace UnityHelper
 {
     public class AdsManager_ADMOB : MonoBehaviour
     {
-
         #region Properties
 
         public static AdsManager_ADMOB Instance;
@@ -21,7 +22,13 @@ namespace UnityHelper
             {
                 var check = false;
                 #if USE_ADS_ADMOB
+                
+                #if UNITY_EDITOR
+                check = true;
+                #else
                 check = _rewardedAd?.CanShowAd() ?? false;
+                #endif
+                
                 #endif
                 return check;
             }
@@ -33,7 +40,13 @@ namespace UnityHelper
             {
                 var check = false;
                 #if USE_ADS_ADMOB
+                
+                #if UNITY_EDITOR
+                check = true;
+                #else
                 check = _interstitialAd?.CanShowAd() ?? false;
+                #endif
+                
                 #endif
                 return check;
             }
@@ -41,32 +54,86 @@ namespace UnityHelper
 
         public bool HasBanner { get; set; }
 
+        public bool HasOpenAds
+        {
+            get
+            {
+                var check = false;
+                #if USE_ADS_ADMOB
+                
+                #if UNITY_EDITOR
+                check = true;
+                #else
+                check = (_appOpenAd?.CanShowAd() ?? false) && DateTime.Now < _expireTime ;
+                #endif
+                
+                #endif
+                return check && _useOpenAds;
+            }
+        }
+
+        [SerializeField]
+        private bool _useOpenAds = true;
+
+        [SerializeField]
+        private bool _useBannerAds = true;
         #if UNITY_ANDROID
         [SerializeField]
-        private string bannerId;
+        private string _rewardAdId = "ca-app-pub-3940256099942544/5224354917";
 
         [SerializeField]
-        private string interId;
+        private string _interAdId = "ca-app-pub-3940256099942544/1033173712";
 
+        [SerializeField, ShowIf("_useBannerAds", true)]
+        private string _bannerAdId = "ca-app-pub-3940256099942544/6300978111";
+
+        [SerializeField, ShowIf("_useOpenAds", true)]
+        private string _openAdId = "ca-app-pub-3940256099942544/9257395921";
+
+        [EndIf]
+        #elif UNITY_IPHONE
         [SerializeField]
-        private string rewardedId;
+        private  string _rewardAdId = "ca-app-pub-3940256099942544/1712485313";
+        [SerializeField]
+        private  string _interAdId = "ca-app-pub-3940256099942544/4411468910";
+        [SerializeField,ShowIf("_useBannerAds",true)]
+        private  string _bannerAdId = "ca-app-pub-3940256099942544/2934735716";
+        [SerializeField,ShowIf("_useOpenAds",true)]
+        private  string _openAdId = "ca-app-pub-3940256099942544/5575463023";
+        [EndIf]
+        #else
+        [SerializeField]
+        private  string _rewardAdId = "unused";
+        [SerializeField]
+        private  string _interAdId = "unused";
+        [SerializeField,ShowIf("_useBannerAds",true)]
+        private  string _bannerAdId = "unused";
+        [SerializeField,ShowIf("_useOpenAds",true)]
+        private  string _openAdId = "unused";
+        [EndIf]
+        #endif
 
         #if USE_ADS_ADMOB
-        [Header("Banner")]
+        [Header("Banner"), ShowIf("_useBannerAds", true)]
         public bool autoLoadBanner = true;
 
         public AdSize     bannerSize     = AdSize.Banner;
         public AdPosition bannerPosition = AdPosition.Bottom;
 
-        private BannerView     _bannerView;
+        [EndIf]
         private InterstitialAd _interstitialAd;
-        private RewardedAd     _rewardedAd;
 
+        private RewardedAd _rewardedAd;
+        private BannerView _bannerView;
+
+        private readonly TimeSpan  TIMEOUT = TimeSpan.FromHours(4);
+        private          DateTime  _expireTime;
+        private          AppOpenAd _appOpenAd;
         #endif
 
         private Action _actionDoneRewarded;
         private Action _actionDoneInterstitial;
-        #endif
+        private Action _actionDoneOpenAd;
 
         #endregion
 
@@ -81,18 +148,24 @@ namespace UnityHelper
             {
                 Destroy(this);
             }
+            #if UNITY_EDITOR
+            HasBanner = true;
+            #endif
         }
 
         #if USE_ADS_ADMOB
 
         void Start()
         {
+            #if UNITY_EDITOR
+            return;
+            #endif
 
             // Initialize the Google Mobile Ads SDK.
             MobileAds.RaiseAdEventsOnUnityMainThread = true;
             MobileAds.Initialize(initStatus =>
             {
-                if (autoLoadBanner)
+                if (_useBannerAds && autoLoadBanner)
                 {
                     LoadBannerAd();
                 }
@@ -100,8 +173,12 @@ namespace UnityHelper
                 LoadInterstitialAd();
                 LoadRewardedAd();
             });
-        }
 
+            if (_useOpenAds)
+            {
+                LoadOpenAd();
+            }
+        }
 
 
         #region Public Func
@@ -136,7 +213,7 @@ namespace UnityHelper
             var adRequest = new AdRequest();
 
             // send the request to load the ad.
-            RewardedAd.Load(rewardedId, adRequest, (RewardedAd ad, LoadAdError error) =>
+            RewardedAd.Load(_rewardAdId, adRequest, (RewardedAd ad, LoadAdError error) =>
             {
                 // if error is not null, the load request failed.
                 if (error != null || ad == null)
@@ -159,7 +236,6 @@ namespace UnityHelper
             return;
             #endif
 
-
             if (!HasRewardedVideo)
             {
                 actionFailed?.Invoke();
@@ -174,7 +250,6 @@ namespace UnityHelper
 
         public void LoadInterstitialAd()
         {
-
             #if UNITY_EDITOR
             return;
             #endif
@@ -187,12 +262,11 @@ namespace UnityHelper
                 _interstitialAd = null;
             }
 
-
             // create our request used to load the ad.
             var adRequest = new AdRequest();
 
             // send the request to load the ad.
-            InterstitialAd.Load(interId, adRequest, (InterstitialAd ad, LoadAdError error) =>
+            InterstitialAd.Load(_interAdId, adRequest, (InterstitialAd ad, LoadAdError error) =>
             {
                 // if error is not null, the load request failed.
                 if (error != null || ad == null)
@@ -209,7 +283,6 @@ namespace UnityHelper
 
         public void ShowInterstitialAd(Action actionDone = null, Action actionFailed = null)
         {
-
             #if UNITY_EDITOR
             actionDone?.Invoke();
 
@@ -229,9 +302,12 @@ namespace UnityHelper
 
         public void LoadBannerAd()
         {
+            if (!_useBannerAds)
+                return;
             #if UNITY_EDITOR
             return;
             #endif
+
             // create an instance of a banner view first.
             if (_bannerView == null)
             {
@@ -250,25 +326,161 @@ namespace UnityHelper
 
         public void DestroyBannerView()
         {
+            if (!_useBannerAds)
+                return;
             #if UNITY_EDITOR
             return;
             #endif
             HasBanner = false;
 
-            if (_bannerView != null)
+            if (_bannerView == null)
             {
-                _bannerView.Destroy();
-                _bannerView = null;
+                return;
             }
+
+            _bannerView.Destroy();
+            _bannerView = null;
+        }
+
+        public void ShowBannerAd()
+        {
+            if (!_useBannerAds)
+                return;
+            #if UNITY_EDITOR
+            return;
+            #endif
+            _bannerView?.Show();
+        }
+
+        public void HideBannerAd()
+        {
+            #if UNITY_EDITOR
+            return;
+            #endif
+            if (!_useBannerAds)
+                return;
+            _bannerView?.Hide();
+        }
+
+        public void LoadOpenAd()
+        {
+            if(!_useOpenAds) return;
+            #if UNITY_EDITOR
+            return;
+            #endif
+
+            if (_appOpenAd != null)
+            {
+                DestroyOpenAd();
+            }
+
+            var adRequest = new AdRequest();
+
+            AppOpenAd.Load(_openAdId, adRequest, (AppOpenAd ad, LoadAdError error) =>
+            {
+                if (error != null || ad == null)
+                {
+                    DelayAction(0.15f,LoadOpenAd);
+                    return;
+                }
+                
+
+                _appOpenAd = ad;
+                _expireTime = DateTime.Now + TIMEOUT;
+                RegisterEventHandlers(ad);
+            });
+        }
+
+        public void ShowOpenAd(Action actionDone = null, Action actionFailed = null)
+        {
+            if(!_useOpenAds) return;
+            #if UNITY_EDITOR
+            actionDone?.Invoke();
+            return;
+            #endif
+            // App open ads can be preloaded for up to 4 hours.
+            if (_appOpenAd != null && _appOpenAd.CanShowAd() && DateTime.Now < _expireTime)
+            {
+                _actionDoneOpenAd = actionDone;
+                _appOpenAd.Show();
+            }
+            else
+            {
+                actionFailed?.Invoke();
+            }
+
+        }
+
+        public void DestroyOpenAd()
+        {
+            if(!_useOpenAds) return;
+            #if UNITY_EDITOR
+            return;
+            #endif
+            if (_appOpenAd == null)
+            {
+                return;
+            }
+            
+            _appOpenAd.Destroy();
+            _appOpenAd = null;
+
         }
 
         #endregion
 
+        #region OpenAds
 
+        private void RegisterEventHandlers(AppOpenAd ad)
+        {
+            // Raised when the ad is estimated to have earned money.
+            ad.OnAdPaid += OnOpenAdPaid;
+            // Raised when an impression is recorded for an ad.
+            ad.OnAdImpressionRecorded += OnOpenAdImpressionRecorded;
+            // Raised when a click is recorded for an ad.
+            ad.OnAdClicked += OnOpenAdClicked;
+            // Raised when an ad opened full screen content.
+            ad.OnAdFullScreenContentOpened += OnOpenAdFullScreenContentOpened;
+            // Raised when the ad closed full screen content.
+            ad.OnAdFullScreenContentClosed += OnOpenAdFullScreenContentClosed;
+            // Raised when the ad failed to open full screen content.
+            ad.OnAdFullScreenContentFailed += OnOpenAdFullScreenContentFailed;
+        }
 
+        private void OnOpenAdPaid(AdValue obj)
+        {
+        }
+
+        private void OnOpenAdImpressionRecorded()
+        {
+        }
+
+        private void OnOpenAdClicked()
+        {
+        }
+
+        private void OnOpenAdFullScreenContentOpened()
+        {
+        }
+
+        private void OnOpenAdFullScreenContentClosed()
+        {
+            Action action = () =>
+            {
+                _actionDoneOpenAd?.Invoke();
+                LoadOpenAd();
+            };
+            DelayAction(0.15f, action);
+        }
+
+        private void OnOpenAdFullScreenContentFailed(AdError obj)
+        {
+            DelayAction(0.15f, LoadOpenAd);
+        }
+
+        #endregion
+        
         #region Banner Ads
-
-
 
         private void CreateBannerView()
         {
@@ -279,7 +491,7 @@ namespace UnityHelper
             }
 
             // Create a 320x50 banner at top of the screen
-            _bannerView = new BannerView(bannerId, AdSize.Banner, AdPosition.Bottom);
+            _bannerView = new BannerView(_bannerAdId, AdSize.Banner, AdPosition.Bottom);
         }
 
 
@@ -337,7 +549,6 @@ namespace UnityHelper
 
         #region Interstitial Ads
 
-
         private void InterstitialEvent(InterstitialAd interstitialAd)
         {
             // Raised when the ad is estimated to have earned money.
@@ -361,17 +572,14 @@ namespace UnityHelper
 
         private void OnInterAdImpressionRecorded()
         {
-
         }
 
         private void OnInterAdClicked()
         {
-
         }
 
         private void OnInterAdFullScreenContentOpened()
         {
-
         }
 
         private void OnInterAdFullScreenContentClosed()
@@ -441,7 +649,6 @@ namespace UnityHelper
                 LoadRewardedAd();
             };
             DelayAction(0.15f, action);
-
         }
 
         private void OnRewardAdFullScreenContentFailed(AdError obj)

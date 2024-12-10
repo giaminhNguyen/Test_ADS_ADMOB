@@ -363,5 +363,5 @@ namespace UnityHelper
             }
         }
     }
-    #endif
 }
+#endif

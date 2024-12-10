@@ -1,7 +1,9 @@
-﻿using System;
+﻿#if UNITY_EDITOR
+
+using System;
 using System.Collections.Generic;
 
-namespace RendererTool
+namespace UnityHelper
 {
     public class StackCustom<T>
     {
@@ -91,3 +93,4 @@ namespace RendererTool
         }
     }
 }
+#endif
