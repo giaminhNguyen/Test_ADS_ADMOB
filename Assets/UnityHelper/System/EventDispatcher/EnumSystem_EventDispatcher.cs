@@ -6,6 +6,8 @@ namespace UnityHelper
     public enum EventID
     {
         None = EnumValue.EventDispatcher,
+        OnRetryCheckInternet = None + 1,
+        FetchRemoteConfigComplete = None + 2,
     }
     
     //
