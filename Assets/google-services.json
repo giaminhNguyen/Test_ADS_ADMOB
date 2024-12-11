@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "772893207053",
+    "project_id": "testadsadmob-af2be",
+    "storage_bucket": "testadsadmob-af2be.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:772893207053:android:b69d13702eafe8062b0344",
+        "android_client_info": {
+          "package_name": "com.NGaMing.Test_ADS_ADMOB"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAwwyqyalo1YabkOiofpM9nrPnOgZTivhE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
