@@ -30,6 +30,7 @@ namespace DefaultNamespace
         
         [SerializeField]
         private Text _adInterInterval;
+        
 
         private void OnEnable()
         {
@@ -44,9 +45,12 @@ namespace DefaultNamespace
         private void OnFetchRemoteConfigCompleteHandle(object obj)
         {
             ShowMessage("Fetch Remote Config Complete");
-            _isAds.text = RemoteConfigControl.Instance.is_ads ? "True" : "False";
-            _isResumeAd.text = RemoteConfigControl.Instance.is_resume_ad ? "True" : "False";
-            _adInterInterval.text = RemoteConfigControl.Instance.ad_inter_interval.ToString();
+            #if USE_FIREBASE_REMOTE
+            _isAds.text           = RemoteConfigProperties.Instance.is_ads ? "True" : "False";
+            _isResumeAd.text      = RemoteConfigProperties.Instance.is_resume_ad ? "True" : "False";
+            _adInterInterval.text = RemoteConfigProperties.Instance.ad_inter_interval.ToString();
+            #endif
+            
         }
         
         public void ShowMessage(string msg)
@@ -75,32 +79,50 @@ namespace DefaultNamespace
 
         public void ShowInterstitial()
         {
+            #if USE_ADS_ADMOB
             AdsManager_ADMOB.Instance.ShowInterstitialAd();
+            #endif
+            
         }
         
         public void ShowReward()
         {
+            #if USE_ADS_ADMOB
             AdsManager_ADMOB.Instance.ShowRewardedAd();
+            #endif
+            
         }
         
         public void LoadBanner()
         {
+            #if USE_ADS_ADMOB
             AdsManager_ADMOB.Instance.LoadBannerAd();
+            #endif
+            
         }
 
         public void ShowBanner()
         {
+            #if USE_ADS_ADMOB
             AdsManager_ADMOB.Instance.ShowBannerAd();
+            #endif
+            
         }
 
         public void HideBanner()
         {
+            #if USE_ADS_ADMOB
             AdsManager_ADMOB.Instance.HideBannerAd();
+            #endif
+            
         }
 
         public void DestroyBanner()
         {
+            #if USE_ADS_ADMOB
             AdsManager_ADMOB.Instance.DestroyBannerView();
+            #endif
+            
         }
 
         public void LoadNative()
@@ -122,17 +144,26 @@ namespace DefaultNamespace
         
         public void LoadOpenAd()
         {
+            #if USE_ADS_ADMOB
             AdsManager_ADMOB.Instance.LoadOpenAd();
+            #endif
+            
         }
         
         public void ShowOpenAd()
         {
+            #if USE_ADS_ADMOB
             AdsManager_ADMOB.Instance.ShowOpenAd();
+            #endif
+            
         }
 
         public void DestroyOpenAd()
         {
+            #if USE_ADS_ADMOB
             AdsManager_ADMOB.Instance.DestroyOpenAd();
+            #endif
+            
         }
         
     }
