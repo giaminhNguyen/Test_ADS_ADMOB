@@ -14,5 +14,30 @@ namespace UnityHelper
             };
         }
         
+        /// <summary>
+        /// Kiểm tra xem ứng dụng đang chạy trên UnityEditor hay không.
+        /// </summary>
+        public static bool IsUnityEditor()
+        {
+            var check = false;
+            #if UNITY_EDITOR
+            check = true;
+            #endif
+            return check;
+        }
+        
+        /// <summary>
+        /// Kiểm tra xem ứng dụng đang chạy trên UnityEditor hay không.
+        /// </summary>
+        public static bool IsUnityEditor(this MonoBehaviour mono)
+        {
+            var check = false;
+            #if UNITY_EDITOR
+            check = true;
+            #endif
+            return check;
+        }
+
+        
     }
 }

@@ -292,7 +292,6 @@ GameObject:
   m_Component:
   - component: {fileID: 616494843}
   - component: {fileID: 616494844}
-  - component: {fileID: 616494845}
   m_Layer: 0
   m_Name: AdsManager
   m_TagString: Untagged
@@ -324,7 +323,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 616494842}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 15df0b99d2087b041aebf23ebfbc0111, type: 3}
+  m_Script: {fileID: 11500000, guid: b30a5a96df80edf419b178e0a893ecbd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _useOpenAds: 1
@@ -333,19 +332,6 @@ MonoBehaviour:
   _interAdId: ca-app-pub-3940256099942544/1033173712
   _bannerAdId: ca-app-pub-3940256099942544/6300978111
   _openAdId: ca-app-pub-3940256099942544/9257395921
---- !u!114 &616494845
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 616494842}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b737e5f04b29423bb838c41d24108242, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  isDataFetched: 0
 --- !u!1 &1114178118
 GameObject:
   m_ObjectHideFlags: 0

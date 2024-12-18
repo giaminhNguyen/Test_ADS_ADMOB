@@ -42,6 +42,11 @@ namespace DefaultNamespace
             EventDispatcher.Instance.RemoveListener(EventID.FetchRemoteConfigComplete, OnFetchRemoteConfigCompleteHandle);
         }
 
+        private void Start()
+        {
+            AdsManager_ADMOB_1.instance.SetStatus(true);
+        }
+
         private void OnFetchRemoteConfigCompleteHandle(object obj)
         {
             ShowMessage("Fetch Remote Config Complete");
@@ -71,57 +76,44 @@ namespace DefaultNamespace
 
         private void Update()
         {
-            _rewardStatus.text = AdsManager_ADMOB.Instance.HasRewardedVideo ? "Ready" : "Not Ready";
-            _interStatus.text  = AdsManager_ADMOB.Instance.HasInterstitial ? "Ready" : "Not Ready";
-            _bannerStatus.text = AdsManager_ADMOB.Instance.HasBanner ? "Ready" : "Not Ready";
-            _openAdSatus.text  = AdsManager_ADMOB.Instance.HasOpenAds ? "Ready" : "Not Ready";
+            _rewardStatus.text = AdsUtility.hasAdmobReward ? "Ready" : "Not Ready";
+            _interStatus.text  = AdsUtility.hasAdmobInter ? "Ready" : "Not Ready";
+            _bannerStatus.text = AdsUtility.hasAdmobBanner ? "Ready" : "Not Ready";
+            _openAdSatus.text  = AdsUtility.hasOpenAd ? "Ready" : "Not Ready";
         }
 
         public void ShowInterstitial()
         {
-            #if USE_ADS_ADMOB
-            AdsManager_ADMOB.Instance.ShowInterstitialAd();
-            #endif
+            AdsManager_ADMOB_1.instance.ShowInterstitialAd();
             
         }
         
         public void ShowReward()
         {
-            #if USE_ADS_ADMOB
-            AdsManager_ADMOB.Instance.ShowRewardedAd();
-            #endif
+            AdsManager_ADMOB_1.instance.ShowRewardedAd();
             
         }
         
         public void LoadBanner()
         {
-            #if USE_ADS_ADMOB
-            AdsManager_ADMOB.Instance.LoadBannerAd();
-            #endif
             
         }
 
         public void ShowBanner()
         {
-            #if USE_ADS_ADMOB
-            AdsManager_ADMOB.Instance.ShowBannerAd();
-            #endif
+            AdsManager_ADMOB_1.instance.ShowBannerAd();
             
         }
 
         public void HideBanner()
         {
-            #if USE_ADS_ADMOB
-            AdsManager_ADMOB.Instance.HideBannerAd();
-            #endif
+            AdsManager_ADMOB_1.instance.HideBannerAd();
             
         }
 
         public void DestroyBanner()
         {
-            #if USE_ADS_ADMOB
-            AdsManager_ADMOB.Instance.DestroyBannerView();
-            #endif
+            AdsManager_ADMOB_1.instance.DestroyBannerView();
             
         }
 
@@ -144,26 +136,19 @@ namespace DefaultNamespace
         
         public void LoadOpenAd()
         {
-            #if USE_ADS_ADMOB
-            AdsManager_ADMOB.Instance.LoadOpenAd();
-            #endif
+            AdsManager_ADMOB_1.instance.LoadOpenAd();
             
         }
         
         public void ShowOpenAd()
         {
-            #if USE_ADS_ADMOB
-            AdsManager_ADMOB.Instance.ShowOpenAd();
-            #endif
+           AdsManager_ADMOB_1.instance.ShowOpenAd();
             
         }
 
         public void DestroyOpenAd()
         {
-            #if USE_ADS_ADMOB
-            AdsManager_ADMOB.Instance.DestroyOpenAd();
-            #endif
-            
+            AdsManager_ADMOB_1.instance.DestroyOpenAd();
         }
         
     }
